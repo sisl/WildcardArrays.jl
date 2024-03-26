@@ -9,17 +9,20 @@ end
 
 Base.size(wa::WildcardArray) = wa.dims
 dict(wa::WildcardArray) = wa.data
+eltype(::WildcardArray{T,N}) where {T,N} = (T, N)
 
 function Base.getindex(wa::WildcardArray, i::Vararg{Int, N}) where {N} 
     keys_obj = dict(wa) |> keys |> collect
+    # println(keys_obj)
+    # println(eltype(wa))
 
-    # if !isequal(n,3)
-    #     error("The key argument must be an integer tuple of size equal to 3")
-    # end
+    if !isequal(N,eltype(wa)[2])
+        error("The key argument must have a size equal to 3")
+    end
 
     if any(x -> x <= 0, i) || any(i[index] > size(wa)[index] for index in 1:N)
         println(i)
-        error("Indices must be integers larger than zero and less than or equal to the entries of the vector $(max_num)")
+        error("Indices must be integers larger than zero and less than or equal to the entries of the vector $(size(wa))")
     end
 
     index = 1
