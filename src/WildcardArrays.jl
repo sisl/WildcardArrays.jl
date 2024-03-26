@@ -2,49 +2,40 @@ module WildcardArrays
 
 using OrderedCollections
 
-struct WildcardArray{T,N} <: AbstractArray{T,N}
+struct WildcardArray{T,N} <: AbstractArray{T,N} where T <: Real
     data::OrderedDict{NTuple{N, Int}, T} # this would be the ordered map
     dims::NTuple{N,Int}
+    WildcardArray(dims::NTuple{N, Int}) = new(OrderedDict{NTuple{N, Int}, T}(), dims)
+    WildcardArray(dims::Vararg{Int, N}) = new(OrderedDict{NTuple{N, Int}, T}(), Tuple(dims))
 end
 
 Base.size(wa::WildcardArray) = wa.dims
 dict(wa::WildcardArray) = wa.data
-eltype(::WildcardArray{T,N}) where {T,N} = (T, N)
+eltype(::WildcardArray{T,N}) = T
 
-function Base.getindex(wa::WildcardArray, i::Vararg{Int, N}) where {N} 
+function Base.getindex(wa::WildcardArray{T,N}, i::Vararg{Int, N})::T 
     keys_obj = dict(wa) |> keys |> collect
     # println(keys_obj)
     # println(eltype(wa))
 
-    if !isequal(N,eltype(wa)[2])
-        error("The key argument must have a size equal to 3")
-    end
-
     if any(x -> x <= 0, i) || any(i[index] > size(wa)[index] for index in 1:N)
-        println(i)
         error("Indices must be integers larger than zero and less than or equal to the entries of the vector $(size(wa))")
     end
 
-    index = 1
-    status = false
+    index = 0
 
-    possible_keys = Iterators.product([[0,index] for index in i]...) |> collect 
-    
-    # [collect(key), [key[1], 0, 0], [key[1], 0, key[3]], [key[1], key[2], 0], [0, key[2], 0], [0, key[2], key[3]], [0, 0, key[3]], [0,0,0]] # all possible keys on the reduced dictionary
-    
-    for kk in possible_keys
+    for kk in Iterators.product([[0,index] for index in i]...)
         temp_index = findfirst(x->isequal(x,kk), keys_obj)
 
         if !isnothing(temp_index)
-            status = true
             if temp_index > index
                 index = temp_index
             end
         end
     end
 
-    if !status
-       return nothing 
+    if index == 0
+       return zero(T) 
     end
 
     return dict(wa)[keys_obj[index]]    # put implementation here
@@ -52,8 +43,13 @@ end
 
 Base.ndims(wa::WildcardArray) = length(wa.dims)
 
-function parse(s::String)
+function parse!(wa::WildcardArray, s::String, values::Vector{Vector{String}})
     # parse string into WildcardArray
 end
+
+function parse!(wa::WildcardArray, s::String)
+    # parse string into WildcardArray
+end
+
 
 end
