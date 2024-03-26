@@ -1,7 +1,9 @@
 module WildcardArrays
 
+using OrderedCollections
+
 struct WildcardArray{T,N} <: AbstractArray{T,N}
-    data # this would be the ordered map
+    data::OrderedDict{NTuple{N, Int}, T} # this would be the ordered map
     dims::NTuple{N,Int}
 end
 
