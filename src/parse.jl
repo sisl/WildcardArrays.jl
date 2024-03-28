@@ -58,62 +58,11 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     return WildcardArray(data, Tuple(length(vp) for vp in values), default) 
 end
 
-function parse(s::String; default=0.0)
-    T = typeof(default)
-    regex_first_colon = r"^([^:]*):"
-    name_of_transition = string(match(regex_first_colon, s).captures[1] |> strip)
-
-    regex, num_colons = _create_regex(name_of_transition, s)
-    N = maximum(num_colons) # the WildcardArray will have N dimensions, where N is the maximum number of colons
-
-    index=Vector{NTuple{N,Int}}()
-    vv=Vector{T}()
-
-    for (match, col) in zip(eachmatch(regex, s), num_colons)
-        fields = match.captures
-        filter!(x -> !isnothing(x) && !isempty(x), fields)
-
-        param = strip(fields[end], ['\n', '\r', ' '])
-        if col == N
-            tmp = replace(fields[1:end-1], "*"=>"0")
-            println(tmp)
-            tmp = map(x -> Base.parse(Int,x), tmp)
-
-            push!(index, Tuple(tmp))
-            push!(vv, Base.parse(T, param))
-        elseif col == N-1
-            tmp_fields = fields[1:end-1]
-            
-            for (ii,val) in enumerate(param)
-                tt = deepcopy(tmp_fields)
-                
-                push!(index, Tuple(push!(tt, ii)))
-                push!(vv, Base.parse(T,val))
-            end
-
-        elseif col == N-2
-            param = string.(split(param, '\n'))
-            tmp_fields = fields[1:end-1]
-
-            for (jj,line) in enumerate(param)
-                tt_1 = deepcopy(tmp_fields)
-                push!(tt_1, jj)
-
-                for (ii,entry) in enumerate(string.(split(line)))
-                        tt_2 = deepcopy(tt_1)
-                        push!(index, Tuple(push!(tt_2, ii)))
-                        push!(vv, Base.parse(T,entry))
-                end 
-            end
-        else
-            error("Unable to parse this string")
-        end
-    end
-    data = OrderedDict(tuple => fvalue for (tuple, fvalue) in zip(index,vv))
-    # maxindex = (maximum(idx[i] for idx in index) for i = 1:N)
-    # println(maxindex)
-    return WildcardArray{T, N}(data, maxindex, default) 
+function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0)
+    values = [string.(startindex:(startindex+dim-1)) for dim in dims]
+    parse(s, values, default=default)
 end
+
 
 function _create_regex(name::String, s::String)
     base_regex = ":\\s*(.*?)\\s*" # This is the base regex to capture the values between the colons
