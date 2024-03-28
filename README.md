@@ -83,4 +83,8 @@ observations = ["warning", "more-warning"]
 vv = [actions, states, states, observations]
 
 wa = WildcardArrays.parse(str, vv)
+
+println(wa.data)
+println(wa.dims)
+nothing
 ```
