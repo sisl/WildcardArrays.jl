@@ -25,6 +25,7 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
             push!(index, Tuple(dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])))
             push!(vv, Base.parse(T, param))
         elseif col == N-1
+            param = split(param)
             tmp_fields = [dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])] 
             
             for (ii,val) in enumerate(param)
@@ -54,7 +55,7 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     end
 
     data = OrderedDict(tuple => fvalue for (tuple, fvalue) in zip(index,vv))
-    return WildcardArray{T, N}(data, Tuple(length(vp) for vp in values)) 
+    return WildcardArray(data, Tuple(length(vp) for vp in values), default) 
 end
 
 function parse(s::String; default=0.0)
@@ -74,7 +75,11 @@ function parse(s::String; default=0.0)
 
         param = strip(fields[end], ['\n', '\r', ' '])
         if col == N
-            push!(index, Tuple(fields[1:end-1]))
+            tmp = replace(fields[1:end-1], "*"=>"0")
+            println(tmp)
+            tmp = map(x -> Base.parse(Int,x), tmp)
+
+            push!(index, Tuple(tmp))
             push!(vv, Base.parse(T, param))
         elseif col == N-1
             tmp_fields = fields[1:end-1]
@@ -105,8 +110,9 @@ function parse(s::String; default=0.0)
         end
     end
     data = OrderedDict(tuple => fvalue for (tuple, fvalue) in zip(index,vv))
-    maxindex = (maximum(idx[i] for idx in index) for i = 1:N)
-    return WildcardArray{T, N}(data, maxindex) 
+    # maxindex = (maximum(idx[i] for idx in index) for i = 1:N)
+    # println(maxindex)
+    return WildcardArray{T, N}(data, maxindex, default) 
 end
 
 function _create_regex(name::String, s::String)
