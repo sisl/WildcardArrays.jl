@@ -20,7 +20,7 @@ function Base.getindex(wa::WildcardArray{T,N}, i::Vararg{Int,N})::T where {T,N}
     end
 
     if index == 0
-        return zero(T)
+        return wa.default
     end
 
     return dict(wa)[keys_obj[index]]    # put implementation here

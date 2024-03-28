@@ -2,9 +2,10 @@ module WildcardArrays
 
 using OrderedCollections
 
-struct WildcardArray{T<:Real,N} <: AbstractArray{T,N}
+struct WildcardArray{T,N} <: AbstractArray{T,N}
     data::OrderedDict{NTuple{N,Int},T} # this would be the ordered map
     dims::NTuple{N,Int}
+    default::T
 end
 
 Base.size(wa::WildcardArray) = wa.dims
