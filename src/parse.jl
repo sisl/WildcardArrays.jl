@@ -63,6 +63,23 @@ function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0)
     parse(s, values, default=default)
 end
 
+function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0)
+    values = Vector{String}()
+
+    for vec in dims
+        if eltype(vec) == String
+            push!(values, vec)
+        elseif eltype(vec) == Int
+            push!(values, string.(startindex:(startindex+vec-1)))
+        else
+            error("The elements of the dims vector must be either of type String or Int")
+        end
+    end
+
+    parse(s, values, default=default)
+end
+    
+
 
 function _create_regex(name::String, s::String)
     base_regex = ":\\s*(.*?)\\s*" # This is the base regex to capture the values between the colons
@@ -71,13 +88,7 @@ function _create_regex(name::String, s::String)
 
     regex_count_colon = Regex("\\s*(?<=($(name)))(.*)(\\n|\$)")
 
-    # TODO: does something like the line below work?
-    # num_colons = [count(r":", match.captures[2]) for match in eachmatch(regex_count_colon, s)]
-    num_colons = Vector{Int}()
-    for match in eachmatch(regex_count_colon, s)
-        tmp = match.captures[2]
-        push!(num_colons, count(r":", tmp))
-    end
+    num_colons = [count(r":", match.captures[2]) for match in eachmatch(regex_count_colon, s)]
 
     _num_colons = unique(num_colons) # getting the occurence of the number of colons
     string_regex = Vector{String}()
