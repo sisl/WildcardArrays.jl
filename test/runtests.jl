@@ -101,7 +101,7 @@ observations = ["warning", "more-warning"]
 pushfirst!(observations, "*")
 dic_observations = Dict(observation=> (i-1) for (i,observation) in enumerate(observations))
 
-index=Vector{Tuple{Int, Int, Int, Int}}()
+index=Vector{NTuple{N,Int}}()
 values= Vector{Float64}()
 
 for (match, col) in zip(eachmatch(Regex(ss), str), num_colons)
@@ -137,6 +137,8 @@ for (match, col) in zip(eachmatch(Regex(ss), str), num_colons)
                 push!(values, parse(Float64,entry))
            end 
         end
+    else
+        error("Unable to parse this string")
     end
 end
 
