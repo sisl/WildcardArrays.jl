@@ -48,7 +48,7 @@ function parse(s::String, values::Vector{Vector{String}})
     regex_first_colon = r"^([^:]*):"
     name_of_transition = string(match(regex_first_colon, s).captures[1] |> strip)
     
-    sp = _parse_string(s, regex_first_colon) # removing the name of the transition
+    # sp = _parse_string(s, regex_first_colon) # removing the name of the transition
 
     dictionaries = Vector{Dict}()
 
@@ -118,13 +118,13 @@ function parse!(wa::WildcardArray, s::String)
     # parse string into WildcardArray
 end
 
-function _parse_string(s::String, prefix::Regex)
-    sp = string.(split(s, "\n"))
-    spp = map(strip, [replace(line, prefix => "") for line in sp])
-    filter!(!isempty, spp)
+# function _parse_string(s::String, prefix::Regex)
+#     sp = string.(split(s, "\n"))
+#     spp = map(strip, [replace(line, prefix => "") for line in sp])
+#     filter!(!isempty, spp)
 
-    return join(spp, " \n ") 
-end
+#     return join(spp, " \n ") 
+# end
 
 function _create_regex(name::String, s::String)
     base_regex = ":\\s*(.*?)\\s*" # This is the base regex to capture the values between the colons
