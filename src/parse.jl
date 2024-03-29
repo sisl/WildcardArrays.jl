@@ -67,9 +67,9 @@ function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0)
     values = Vector{String}()
 
     for vec in dims
-        if eltype(vec) == String
+        if Base.eltype(vec) == String
             push!(values, vec)
-        elseif eltype(vec) == Int
+        elseif Base.eltype(vec) == Int
             push!(values, string.(startindex:(startindex+vec-1)))
         else
             error("The elements of the dims vector must be either of type String or Int")
