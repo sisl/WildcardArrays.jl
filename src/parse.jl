@@ -1,5 +1,6 @@
 function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     T = typeof(default)
+    N = length(values)
     regex_first_colon = r"^([^:]*):"
     name_of_transition = string(match(regex_first_colon, s).captures[1] |> strip)
 
@@ -11,7 +12,6 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     end
 
     regex, num_colons = _create_regex(name_of_transition, s)
-    N = maximum(num_colons) # the WildcardArray will have N dimensions, where N is the maximum number of colons
 
     index=Vector{NTuple{N,Int}}()
     vv=Vector{T}()
