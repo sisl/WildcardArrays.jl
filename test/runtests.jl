@@ -3702,7 +3702,7 @@ O: structural-repair-and-visual-inspect
 0.00 0.00 1.00	0.00 0.00
 """
 
-states = ["less-5, between-5-15, between-15-25, more-25, failed"]
+states = ["less-5", "between-5-15", "between-15-25", "more-25", "failed"]
 actions = ["no-repair-and-no-inspect", "no-repair-and-visual-inspect", " no-repair-and-ut-inspect", "clean-paint-and-no-inspect", "clean-paint-and-visual-inspect", "clean-paint-and-ut-inspect", "paint-strengthen-and-no-inspect", "paint-strengthen-and-visual-inspect", "paint-strengthen-and-ut-inspect", "structural-repair-and-no-inspect", "structural-repair-and-visual-inspect", "structural-repair-and-ut-inspect"] 
 
 observations = 5
@@ -3717,4 +3717,104 @@ wa = WildcardArrays.parse(str, vv)
 @test wa[11, 2, 3] == 0.2
 @test wa[2, 3, 1] == 0.05
 
+end
+
+@testset "concert.POMDP" begin
+    # Test the concert POMDP from https://www.pomdp.org
+
+    states = ["interested", "bored"]
+    actions = ["tv", "radio", "nothing"]
+    observations = ["want-to-go", "dont-want-to-go"]
+
+    vv = [actions,states,observations]
+
+    str_T = """
+        T: tv : interested      0.9 0.1
+        T: tv : bored           0.6 0.4
+
+        T: radio : interested   0.8 0.2
+        T: radio : bored        0.3 0.7
+
+        T: nothing : interested 0.5 0.5
+        T: nothing : bored      0.1 0.9
+    """
+
+    wa_T = WildcardArrays.parse(str_T, vv)
+
+    @test size(wa_T) == (3, 2, 2)
+    @test wa_T[1, 1, 1] == 0.9 && wa_T[1, 1, 2] == 0.1
+    @test wa_T[3, 1, 1] == 0.5 && wa_T[3, 1, 2] == 0.5
+    @test wa_T[2, 2, 1] == 0.3 && wa_T[2, 2, 2] == 0.7
+
+    str_O = """
+        O: tv : interested      0.8 0.2
+        O: tv : bored           0.7 0.3
+
+        O: radio : interested   0.7 0.3
+        O: radio : bored        0.4 0.6
+
+        O: nothing : interested 0.9 0.1
+        O: nothing : bored      0.1 0.9 
+    """
+
+    wa_O = WildcardArrays.parse(str_O, vv)
+
+    @test size(wa_O) == (3, 2, 2)
+    @test wa_O[1,1,1] == 0.8 && wa_O[1,1,2] == 0.2
+    @test wa_O[2,2,1] == 0.4 && wa_O[2,2,2] == 0.6
+
+    str_R = """
+        R: tv : * : *: * -10
+        R: radio : interested : *: * -4
+        R: nothing : * : *: * 0
+    """
+    vv = [actions,states,states,observations]
+
+    wa_R = WildcardArrays.parse(str_R, vv)  
+
+    @test size(wa_R) == (3, 2, 2, 2)
+    @test wa_R[1,1,1,1] == -10
+    @test wa_R[1,1,2,1] == -10
+    @test wa_R[1,2,2,2] == -10
+
+    @test wa_R[2,1,1,1] == -4
+    @test wa_R[2,1,2,2] == -4
+    @test wa_R[2,2,2,2] == 0
+
+
+end
+
+@testset "mypomdp.POMDP" begin
+str = """
+T: east : warm : almost-cold 0.5  
+T: west : cold : * 9.7
+T: west : almost-cold
+0.1 0.1 0.1 0.1 0 0.6
+T: west : cold
+uniform
+T: south 
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+T: east
+    uniform
+T: north
+ 	identity
+T: * : *
+0.1 0.2 0.3 0.4 0 0 
+T: * : * 0.1 0.2 0.3 0.4 0 0 
+T: * : warm 0.1 0.3 0.2 0.4 0 0 
+T: north : * 0.2 0.1 0.3 0.4 0 0 
+T: *
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+0.1 0.1 0.1 0.1 0 0.6
+"""
+    
 end
