@@ -64,7 +64,7 @@ function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0)
 end
 
 function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0)
-    values = Vector{String}()
+    values = Vector{Vector{String}}()
 
     for vec in dims
         if Base.eltype(vec) == String
