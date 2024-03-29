@@ -11,17 +11,31 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
         push!(dictionaries, d)
     end
 
-    regex, num_colons = _create_regex(name_of_transition, s)
+    regex, collection_regex, num_colons, dic_colons = _create_regex(name_of_transition, s)
 
     index=Vector{NTuple{N,Int}}()
     vv=Vector{T}()
 
-    for (match, col) in zip(eachmatch(regex, s), num_colons)
-        fields = match.captures
-        filter!(x -> !isnothing(x) && !isempty(x), fields)
+    # println(collection_regex)
+    # println(num_colons)
+    for (m, col) in zip(eachmatch(regex, s), num_colons)
+        tmp_str = "$(name_of_transition)" * m.match * "\n$(name_of_transition):"
+        # fields = match.captures
+        # filter!(x -> !isnothing(x) && !isempty(x), fields)
 
+        # param = strip(fields[end], ['\n', '\r', ' '])
+        # println("T"*match.match*"\nT:")
+        # println(typeof(collection_regex))
+        fields = match(collection_regex[dic_colons[col]], tmp_str).captures
+        filter!(x -> !isnothing(x) && !isempty(x), fields)
+        # println(fields)
+        
         param = strip(fields[end], ['\n', '\r', ' '])
         if col == N
+            # tmp_str = "$(name_of_transition)" * match.match * "\n$(name_of_transition):"
+            # fields = match(collection_regex[col]
+
+            # println(fields)
             push!(index, Tuple(dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])))
             push!(vv, Base.parse(T, param))
         elseif col == N-1
@@ -62,7 +76,7 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
                 end 
             end
         else
-            println(fields)
+            # println(fields)
             error("Unable to parse this string")
         end
     end
@@ -101,17 +115,13 @@ function _create_regex(name::String, s::String)
     end_regex = ":\\s*(.*?)\\s+([\\d\\D]*?)(?=$(name)|\$)" # This is the regex to capture the end of the line
 
     regex_count_colon = Regex("\\s*(?<=($(name)))(.*)(\\n|\$)")
-
     num_colons = [count(r":", match.captures[2]) for match in eachmatch(regex_count_colon, s)]
-
     _num_colons = unique(num_colons) # getting the occurence of the number of colons
-    string_regex = Vector{String}()
 
-    for num in _num_colons
-        push!(string_regex, begin_regex * base_regex ^ (num-1) * end_regex)
-    end
+    sorted_colons = sort(_num_colons, rev=true)
+    string_regex = [begin_regex * base_regex ^ (num-1) * end_regex for num in sorted_colons] 
     pre_regex = join(string_regex, "|")
+    ordinal_colons = Dict(num => i for (i, num) in enumerate(sorted_colons))
 
-    return Regex(pre_regex), num_colons
-
+    return Regex(pre_regex), Regex.(string_regex), num_colons, ordinal_colons
 end
