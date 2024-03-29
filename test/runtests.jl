@@ -3656,7 +3656,6 @@ T: 8 : 29 : 29 0.263816
 """
 
 vv = [9,30,30]
-
 wa = WildcardArrays.parse(str, vv)   
 
 @test size(wa) == (9, 30, 30)
@@ -3708,7 +3707,6 @@ actions = ["no-repair-and-no-inspect", "no-repair-and-visual-inspect", " no-repa
 observations = 5
 
 vv = [actions,states,observations]
-
 wa = WildcardArrays.parse(str, vv)
 
 @test size(wa) == (12, 5, 5)
@@ -3725,9 +3723,7 @@ end
     states = ["interested", "bored"]
     actions = ["tv", "radio", "nothing"]
     observations = ["want-to-go", "dont-want-to-go"]
-
-    vv = [actions,states,observations]
-
+    
     str_T = """
         T: tv : interested      0.9 0.1
         T: tv : bored           0.6 0.4
@@ -3739,6 +3735,7 @@ end
         T: nothing : bored      0.1 0.9
     """
 
+    vv = [actions,states,states]
     wa_T = WildcardArrays.parse(str_T, vv)
 
     @test size(wa_T) == (3, 2, 2)
@@ -3757,6 +3754,7 @@ end
         O: nothing : bored      0.1 0.9 
     """
 
+    vv = [actions,states,observations]
     wa_O = WildcardArrays.parse(str_O, vv)
 
     @test size(wa_O) == (3, 2, 2)
@@ -3769,7 +3767,6 @@ end
         R: nothing : * : *: * 0
     """
     vv = [actions,states,states,observations]
-
     wa_R = WildcardArrays.parse(str_R, vv)  
 
     @test size(wa_R) == (3, 2, 2, 2)
@@ -3780,8 +3777,6 @@ end
     @test wa_R[2,1,1,1] == -4
     @test wa_R[2,1,2,2] == -4
     @test wa_R[2,2,2,2] == 0
-
-
 end
 
 @testset "mypomdp.POMDP" begin
@@ -3789,32 +3784,59 @@ str = """
 T: east : warm : almost-cold 0.5  
 T: west : cold : * 9.7
 T: west : almost-cold
-0.1 0.1 0.1 0.1 0 0.6
+0.1 0.4 0.5 
 T: west : cold
 uniform
 T: south 
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
+0.1 0.9 0 
+0.3 0.3 0.4 
+0.7 0.1 0.2 
 T: east
     uniform
 T: north
  	identity
 T: * : *
-0.1 0.2 0.3 0.4 0 0 
-T: * : * 0.1 0.2 0.3 0.4 0 0 
-T: * : warm 0.1 0.3 0.2 0.4 0 0 
-T: north : * 0.2 0.1 0.3 0.4 0 0 
-T: *
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
-0.1 0.1 0.1 0.1 0 0.6
+0.3 0.4 0.3 
+T: * : * 0.1 0.2 0.7 
+T: * : warm 0.2 0.8 0
+T: north : * 0.2 0.2 0.6 
+T: west : warm: warm 100
 """
-    
+
+actions = ["north", "south", "east", "west"]
+states = ["warm", "almost-cold", "cold"]
+
+vv = [actions, states, states]
+wa = WildcardArrays.parse(str, vv)
+
+@test size(wa) == (4, 3, 3)
+@test wa[4, 2, 1] == 0.1
+@test wa[4, 1, 1] == 100
+@test wa[1, 1, 1] == 0.2
+@test wa[1, 1, 2] == 0.2
+@test wa[1, 1, 3] == 0.6
+end
+
+@testset "a-problem!" begin
+    # A problem with OrderedDict
+
+    str="""
+        T: west : cold : * 9.7
+        T : *
+            0.1 0.9 0 
+            0.3 0.3 0.4 
+            0.7 0.1 0.2 
+        T: west : cold : * 100
+    """
+
+    actions = ["north", "south", "east", "west"]
+    states = ["warm", "almost-cold", "cold"]
+
+    vv = [actions, states, states]
+    wa = WildcardArrays.parse(str, vv)
+
+    @test size(wa) == (4, 3, 3)
+    @test wa[4, 2, 1] == 0.3
+    # @test wa[4, 3, 1] == 100
+    # @test wa[4, 3, 2] == 100
 end

@@ -25,9 +25,14 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
             push!(index, Tuple(dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])))
             push!(vv, Base.parse(T, param))
         elseif col == N-1
-            param = split(param)
+            param = string.(split(param))
+            # println(param)
             tmp_fields = [dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])] 
-            
+
+            if isequal(param, ["uniform"])
+                param = [string(1/length(values[end])) for _ in values[end]]
+            end
+
             for (ii,val) in enumerate(param)
                 tt = deepcopy(tmp_fields)
                 
@@ -39,10 +44,17 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
             param = string.(split(param, '\n'))
             tmp_fields = [dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])] 
 
+            if isequal(param, ["uniform"])
+                param = [join([string(1/length(values[end])) for _ in values[end]], " ") for __ in 1:length(values[end-1])] # if uniform, then create the uniform matrix
+            end
+
+            if isequal(param, ["identity"])
+                param = [join([i == j ? "1.0" : "0.0" for j in 1:length(values[end])], " ") for i in 1:length(values[end-1])] # if identity, then create the identity matrix
+            end
+
             for (jj,line) in enumerate(param)
                 tt_1 = deepcopy(tmp_fields)
                 push!(tt_1, jj)
-
                 for (ii,entry) in enumerate(string.(split(line)))
                         tt_2 = deepcopy(tt_1)
                         push!(index, Tuple(push!(tt_2, ii)))
@@ -50,11 +62,13 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
                 end 
             end
         else
+            println(fields)
             error("Unable to parse this string")
         end
     end
 
     data = OrderedDict(tuple => fvalue for (tuple, fvalue) in zip(index,vv))
+
     return WildcardArray(data, Tuple(length(vp) for vp in values), default) 
 end
 
