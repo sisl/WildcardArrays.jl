@@ -16,31 +16,18 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     index=Vector{NTuple{N,Int}}()
     vv=Vector{T}()
 
-    # println(collection_regex)
-    # println(num_colons)
     for (m, col) in zip(eachmatch(regex, s), num_colons)
         tmp_str = "$(name_of_transition)" * m.match * "\n$(name_of_transition):"
-        # fields = match.captures
-        # filter!(x -> !isnothing(x) && !isempty(x), fields)
+        fields = match(collection_regex[dic_colons[col]], tmp_str).captures # choosing the right regex. dic_colons[col] contains the index of the correct regex 
 
-        # param = strip(fields[end], ['\n', '\r', ' '])
-        # println("T"*match.match*"\nT:")
-        # println(typeof(collection_regex))
-        fields = match(collection_regex[dic_colons[col]], tmp_str).captures
         filter!(x -> !isnothing(x) && !isempty(x), fields)
-        # println(fields)
-        
         param = strip(fields[end], ['\n', '\r', ' '])
         if col == N
-            # tmp_str = "$(name_of_transition)" * match.match * "\n$(name_of_transition):"
-            # fields = match(collection_regex[col]
-
-            # println(fields)
             push!(index, Tuple(dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])))
             push!(vv, Base.parse(T, param))
+
         elseif col == N-1
             param = string.(split(param))
-            # println(param)
             tmp_fields = [dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])] 
 
             if isequal(param, ["uniform"])
@@ -76,7 +63,6 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
                 end 
             end
         else
-            # println(fields)
             error("Unable to parse this string")
         end
     end
