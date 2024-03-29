@@ -17,8 +17,7 @@ eltype(::WildcardArray{T,N}) where {T,N} = T
 include("./getindex.jl")
 
 export 
-    WildcardArray, 
-    parse
+    WildcardArray
 
 include("./parse.jl")
 
