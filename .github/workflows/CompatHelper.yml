@@ -9,8 +9,6 @@ jobs:
     steps:
       - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
-      - name: Install dependencies
-        run: julia --project -e 'using Pkg; Pkg.add(PackageSpec(url="git@github.com:sisl/WildcardArrays.jl.git")) Pkg.instantiate()'
       - name: CompatHelper.main()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
