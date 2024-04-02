@@ -105,6 +105,8 @@ function _create_regex(name::String, s::String)
     regex_count_colon = Regex("\\s*$(name)\\s*:(.*)|\\s*:(.*)")
     num_colons = [count(r":", m.match) for m in eachmatch(regex_count_colon, s)]
     _num_colons = unique(num_colons) # getting the occurence of the number of colons
+    filter!(x->x>0, _num_colons) # removing possible zeros
+    filter!(x->x>0, num_colons) # removing possible zeros
 
     sorted_colons = sort(_num_colons, rev=true)
     string_regex = [begin_regex * base_regex ^ (num-1) * end_regex for num in sorted_colons] 

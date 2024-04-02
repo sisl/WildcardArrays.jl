@@ -3762,9 +3762,9 @@ end
     @test wa_O[2,2,1] == 0.4 && wa_O[2,2,2] == 0.6
 
     str_R = """
-        R: tv : * : *: * -10
-        R: radio : interested : *: * -4
-        R: nothing : * : *: * 0
+        : tv : * : *: * -10
+        : radio : interested : *: * -4
+        : nothing : * : *: * 0
     """
     vv = [actions,states,states,observations]
     wa_R = WildcardArrays.parse(str_R, vv)  
