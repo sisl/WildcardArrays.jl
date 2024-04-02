@@ -3930,3 +3930,5 @@ wa = WildcardArrays.parse(str, vv)
 @test wa[6, 1, 10] == 1.0
 
 end
+
+nothing

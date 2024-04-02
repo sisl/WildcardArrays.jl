@@ -18,7 +18,7 @@ WildcardArrays.jl exports a julia type called WildcardArray that can parse strin
 ```
 WildcardArray(s::String, values::Vector{Vector{String}}; default=0.0, startindex=0)
 
-WildcardArray(s::String, values::Vector{Any}; default=0.0, startindex=0)
+WildcardArray(s::String, values::Vector{T}; default=0.0, startindex=0) where T <: Union{Any, Int}
 ```
 
 Returning to the example in the beginning, the Julia code below can be used to create a matrix with the adequate sparsity pattern. 

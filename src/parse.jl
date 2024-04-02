@@ -1,4 +1,4 @@
-function parse(s::String, values::Vector{Vector{String}}; default=0.0, possible_strings::Vector{String} = ["T", "R", "O"])
+function parse(s::String, values::Vector{Vector{String}}; default=0.0, startindex=0) 
     T = typeof(default)
     N = length(values)
     regex_first_colon = r"^([^:]*):"
@@ -11,7 +11,7 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0, possible_
         push!(dictionaries, d)
     end
 
-    regex, collection_regex, num_colons, dic_colons = _create_regex(name_of_transition, s, possible_strings=possible_strings)
+    regex, collection_regex, num_colons, dic_colons = _create_regex(name_of_transition, s) 
 
     index=Vector{NTuple{N,Int}}()
     vv=Vector{T}()
@@ -73,34 +73,28 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0, possible_
     return WildcardArray(data, Tuple(length(vp) for vp in values), default) 
 end
 
-function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0, possible_strings::Vector{String} = ["T", "R", "O"])
-    values = [string.(startindex:(startindex+dim-1)) for dim in dims]
-    parse(s, values, default=default, possible_strings=possible_strings)
-end
+function parse(s::String, values::Vector{T}; default=0.0, startindex=0) where T <: Union{Any, Int}
+    vv = Vector{Vector{String}}()
 
-function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0, possible_strings::Vector{String} = ["T", "R", "O"])
-    values = Vector{Vector{String}}()
-
-    for vec in dims
+    for vec in values
         if Base.eltype(vec) == String
-            push!(values, vec)
-        elseif Base.eltype(vec) == Int
-            push!(values, string.(startindex:(startindex+vec-1)))
+            push!(vv, vec)
+        elseif vec isa Int
+            push!(vv, string.(startindex:(startindex+vec-1)))
         else
-            error("The elements of the dims vector must be either of type String or Int")
+            error("The elements of the values must be either of a Vector{String} or Int. Unable to parse this string.")
         end
     end
 
-    parse(s, values, default=default, possible_strings=possible_strings)
+    parse(s, vv, default=default)
 end
     
 
 
-function _create_regex(name::String, s::String; possible_strings::Vector{String} = ["T", "R", "O"])
+function _create_regex(name::String, s::String) 
     base_regex = ":\\s*([^:\\s]+)\\s*" # This is the base regex to capture the values between the colons
     begin_regex = "(\\s*[(?<=$(name))\\s+]\\s*|\\s*)" # This is the regex to capture the beginning of the line
-    end_regex = ":\\s*([^:\\s]+)\\s+([^$(join(possible_strings)):]*)[\\s\$]*" # This is the regex to capture the end of the line
-    # end_regex = ":\\s*([^:\\s]+)\\s+([^:]*)\\s*(?=[$(name):]|\$)" # This is the regex to capture the end of the line
+    end_regex = ":\\s*([^:\\s]+)\\s+([^$(name):]*)[\\s\$]*" # This is the regex to capture the end of the line
 
     regex_count_colon = Regex("\\s*$(name)\\s*:(.*)|\\s*:(.*)")
     num_colons = [count(r":", m.match) for m in eachmatch(regex_count_colon, s)]
