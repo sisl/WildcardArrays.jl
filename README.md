@@ -86,7 +86,7 @@ This syntax allows us to assign the value 'a_{jk}' to the entry $(n_1, n_2, \ldo
 
 The code below contains a concrete example of a Julia code that parses a string with most of the syntax described above.
 ```julia
-# An example of a 4 x 3 x 3 WildcardArray
+# An example of a 4 x 3 x 3 WildcardArray (the default value is a zero-based syntax)
 matrix_s = """
 : 2 : 1 : 2 0.5  
 : 3 : 2 : * 9.7
