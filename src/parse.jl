@@ -1,4 +1,4 @@
-function parse(s::String, values::Vector{Vector{String}}; default=0.0)
+function parse(s::String, values::Vector{Vector{String}}; default=0.0, possible_strings::Vector{String} = ["T", "R", "O"])
     T = typeof(default)
     N = length(values)
     regex_first_colon = r"^([^:]*):"
@@ -11,7 +11,7 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
         push!(dictionaries, d)
     end
 
-    regex, collection_regex, num_colons, dic_colons = _create_regex(name_of_transition, s)
+    regex, collection_regex, num_colons, dic_colons = _create_regex(name_of_transition, s, possible_strings=possible_strings)
 
     index=Vector{NTuple{N,Int}}()
     vv=Vector{T}()
@@ -73,12 +73,12 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     return WildcardArray(data, Tuple(length(vp) for vp in values), default) 
 end
 
-function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0)
+function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0, possible_strings::Vector{String} = ["T", "R", "O"])
     values = [string.(startindex:(startindex+dim-1)) for dim in dims]
-    parse(s, values, default=default)
+    parse(s, values, default=default, possible_strings=possible_strings)
 end
 
-function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0)
+function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0, possible_strings::Vector{String} = ["T", "R", "O"])
     values = Vector{Vector{String}}()
 
     for vec in dims
@@ -91,15 +91,15 @@ function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0)
         end
     end
 
-    parse(s, values, default=default)
+    parse(s, values, default=default, possible_strings=possible_strings)
 end
     
 
 
-function _create_regex(name::String, s::String)
+function _create_regex(name::String, s::String; possible_strings::Vector{String} = ["T", "R", "O"])
     base_regex = ":\\s*([^:\\s]+)\\s*" # This is the base regex to capture the values between the colons
     begin_regex = "(\\s*[(?<=$(name))\\s+]\\s*|\\s*)" # This is the regex to capture the beginning of the line
-    end_regex = ":\\s*([^:\\s]+)\\s+([^TRO:]*)[\\s\$]*" # This is the regex to capture the end of the line
+    end_regex = ":\\s*([^:\\s]+)\\s+([^$(join(possible_strings)):]*)[\\s\$]*" # This is the regex to capture the end of the line
     # end_regex = ":\\s*([^:\\s]+)\\s+([^:]*)\\s*(?=[$(name):]|\$)" # This is the regex to capture the end of the line
 
     regex_count_colon = Regex("\\s*$(name)\\s*:(.*)|\\s*:(.*)")
