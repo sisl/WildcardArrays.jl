@@ -12,7 +12,7 @@ matrix_s = """
 : 2 : 1 : * 1
 """
 ```
-where the first colon represents the start a specification and the three subsequent characters (2,1,\*) tell the package to assing the value stored in variable *val* (which can any Number type) to all elements of the row (3,2).  More details about the syntax used by the package is presented below.
+where the first colon represents the start a specification and the three subsequent characters (2,1,\*) tell the package to assign the value stored in variable *val* (which can any Number type) to all elements of the row (3,2).  More details about the syntax used by the package is presented below.
 
 WildcardArrays.jl exports a julia type called WildcardArray that can parse string representations.  
 ```
