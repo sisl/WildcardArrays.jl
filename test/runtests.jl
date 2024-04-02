@@ -3725,14 +3725,14 @@ end
     observations = ["want-to-go", "dont-want-to-go"]
     
     str_T = """
-        T: tv : interested      0.9 0.1
-        T: tv : bored           0.6 0.4
+        : tv : interested      0.9 0.1
+        : tv : bored           0.6 0.4
 
-        T: radio : interested   0.8 0.2
-        T: radio : bored        0.3 0.7
+        : radio : interested   0.8 0.2
+        : radio : bored        0.3 0.7
 
-        T: nothing : interested 0.5 0.5
-        T: nothing : bored      0.1 0.9
+        : nothing : interested 0.5 0.5
+        : nothing : bored      0.1 0.9
     """
 
     vv = [actions,states,states]
@@ -3744,14 +3744,14 @@ end
     @test wa_T[2, 2, 1] == 0.3 && wa_T[2, 2, 2] == 0.7
 
     str_O = """
-        O: tv : interested      0.8 0.2
-        O: tv : bored           0.7 0.3
+        : tv : interested      0.8 0.2
+        : tv : bored           0.7 0.3
 
-        O: radio : interested   0.7 0.3
-        O: radio : bored        0.4 0.6
+        : radio : interested   0.7 0.3
+        : radio : bored        0.4 0.6
 
-        O: nothing : interested 0.9 0.1
-        O: nothing : bored      0.1 0.9 
+        : nothing : interested 0.9 0.1
+        : nothing : bored      0.1 0.9 
     """
 
     vv = [actions,states,observations]
@@ -3781,26 +3781,26 @@ end
 
 @testset "mypomdp.POMDP" begin
 str = """
-T: east : warm : almost-cold 0.5  
-T: west : cold : * 9.7
-T: west : almost-cold
+: east : warm : almost-cold 0.5  
+: west : cold : * 9.7
+: west : almost-cold
 0.1 0.4 0.5 
-T: west : cold
+: west : cold
 uniform
-T: south 
+: south 
 0.1 0.9 0 
 0.3 0.3 0.4 
 0.7 0.1 0.2 
-T: east
+: east
     uniform
-T: north
+: north
  	identity
-T: * : *
+: * : *
 0.3 0.4 0.3 
-T: * : * 0.1 0.2 0.7 
-T: * : warm 0.2 0.8 0
-T: north : * 0.2 0.2 0.6 
-T: west : warm: warm 100
+: * : * 0.1 0.2 0.7 
+: * : warm 0.2 0.8 0
+: north : * 0.2 0.2 0.6 
+   : west : warm: warm 100
 """
 
 actions = ["north", "south", "east", "west"]
@@ -3821,12 +3821,13 @@ end
     # A problem with OrderedDict
 
     str="""
-        T: west : cold : * 9.7
-        T : *
+        : west : cold : * 9.7
+         : *
             0.1 0.9 0 
             0.3 0.3 0.4 
             0.7 0.1 0.2 
-        T: west : cold : * 100
+
+        : west : cold : * 100
     """
 
     actions = ["north", "south", "east", "west"]

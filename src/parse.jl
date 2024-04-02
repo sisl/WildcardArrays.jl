@@ -19,9 +19,10 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0)
     for (m, col) in zip(eachmatch(regex, s), num_colons)
         tmp_str = "$(name_of_transition)" * m.match * "\n$(name_of_transition):"
         fields = match(collection_regex[dic_colons[col]], tmp_str).captures # choosing the right regex. dic_colons[col] contains the index of the correct regex 
+        deleteat!(fields, 1) # remove the first element which is the name_of_transition 
+        fields = map(x->strip(x, ['\n', '\r', ' ']), fields)
 
-        filter!(x -> !isnothing(x) && !isempty(x), fields)
-        param = strip(fields[end], ['\n', '\r', ' '])
+        param = fields[end]
         if col == N
             push!(index, Tuple(dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])))
             push!(vv, Base.parse(T, param))
@@ -96,12 +97,13 @@ end
 
 
 function _create_regex(name::String, s::String)
-    base_regex = ":\\s*(.*?)\\s*" # This is the base regex to capture the values between the colons
-    begin_regex = "\\s*(?<=$(name))\\s*" # This is the regex to capture the beginning of the line
-    end_regex = ":\\s*(.*?)\\s+([\\d\\D]*?)(?=$(name)|\$)" # This is the regex to capture the end of the line
+    base_regex = ":\\s*([^:\\s]+)\\s*" # This is the base regex to capture the values between the colons
+    begin_regex = "(\\s*[(?<=$(name))\\s+]\\s*|\\s*)" # This is the regex to capture the beginning of the line
+    end_regex = ":\\s*([^:\\s]+)\\s+([^TRO:]*)[\\s\$]*" # This is the regex to capture the end of the line
+    # end_regex = ":\\s*([^:\\s]+)\\s+([^:]*)\\s*(?=[$(name):]|\$)" # This is the regex to capture the end of the line
 
-    regex_count_colon = Regex("\\s*(?<=($(name)))(.*)(\\n|\$)")
-    num_colons = [count(r":", match.captures[2]) for match in eachmatch(regex_count_colon, s)]
+    regex_count_colon = Regex("\\s*$(name)\\s*:(.*)|\\s*:(.*)")
+    num_colons = [count(r":", m.match) for m in eachmatch(regex_count_colon, s)]
     _num_colons = unique(num_colons) # getting the occurence of the number of colons
 
     sorted_colons = sort(_num_colons, rev=true)
