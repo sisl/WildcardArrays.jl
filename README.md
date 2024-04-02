@@ -1,6 +1,8 @@
 # WildcardArrays
 
 [![Build Status](https://github.com/sisl/WildcardArrays.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/sisl/WildcardArrays.jl/actions/workflows/CI.yml?query=branch%3Amaster)
+[![codecov](https://codecov.io/gh/sisl/WildcardArrays.jl/branch/master/graph/badge.svg?token=btTBnBTQyw)](https://codecov.io/gh/sisl/WildcardArrays.jl)
+
 
 ## Brief description
 
@@ -12,19 +14,11 @@ matrix_s = """
 ```
 where the first colon represents the start a specification and the three subsequent characters (2,1,\*) tell the package to assing the value stored in variable *val* (which can any Number type) to all elements of the row (3,2).  More details about the syntax used by the package is presented below.
 
-WildcardArrays.jl exports a julia type called WildcardArray and defines a function WildcardArrays.parse(please refer to the documentation in BLABLA for more details)  
+WildcardArrays.jl exports a julia type called WildcardArray that can parse string representations.  
 ```
-WildcardArray{T,N} <: AbstractArray{T,N}
+WildcardArray(s::String, values::Vector{Vector{String}}; default=0.0, startindex=0)
 
-    - data::OrderedDict{NTuple{N,Int},T}
-    - dims::NTuple{N,Int}
-    - dafault::T
-
-function parse(s::String, values::Vector{Vector{String}}; default=0.0, possible_strings::Vector{String} = ["T", "R", "O"])::WildcardArray
-
-function parse(s::String, dims::Vector{Int}; default=0.0, startindex=0, possible_strings::Vector{String} = ["T", "R", "O"])::WildcardArray
-
-function parse(s::String, dims::Vector{Any}; default=0.0, startindex=0, possible_strings::Vector{String} = ["T", "R", "O"])::WildcardArray
+WildcardArray(s::String, values::Vector{Any}; default=0.0, startindex=0)
 ```
 
 Returning to the example in the beginning, the Julia code below can be used to create a matrix with the adequate sparsity pattern. 
