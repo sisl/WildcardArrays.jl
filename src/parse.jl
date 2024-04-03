@@ -14,18 +14,18 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0, startinde
     regex, collection_regex, num_colons, dic_colons = _create_regex(name_of_transition, s) 
 
     index=Vector{NTuple{N,Int}}()
-    vv=Vector{T}()
+    vv=Vector{PriorityValue{T}}()
 
-    for (m, col) in zip(eachmatch(regex, s), num_colons)
+    for (ii, (m, col)) in enumerate(zip(eachmatch(regex, s), num_colons))
         tmp_str = "$(name_of_transition)" * m.match * "\n$(name_of_transition):"
         fields = match(collection_regex[dic_colons[col]], tmp_str).captures # choosing the right regex. dic_colons[col] contains the index of the correct regex 
+        
         deleteat!(fields, 1) # remove the first element which is the name_of_transition 
         fields = map(x->strip(x, ['\n', '\r', ' ']), fields)
-
         param = fields[end]
         if col == N
             push!(index, Tuple(dd[kk] for (dd,kk) in zip(dictionaries, fields[1:end-1])))
-            push!(vv, Base.parse(T, param))
+            push!(vv, PriorityValue(ii, Base.parse(T, param)))
 
         elseif col == N-1
             param = string.(split(param))
@@ -35,11 +35,11 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0, startinde
                 param = [string(1/length(values[end])) for _ in values[end]]
             end
 
-            for (ii,val) in enumerate(param)
+            for (jj,val) in enumerate(param)
                 tt = deepcopy(tmp_fields)
                 
-                push!(index, Tuple(push!(tt, ii)))
-                push!(vv, Base.parse(T,val))
+                push!(index, Tuple(push!(tt, jj)))
+                push!(vv, PriorityValue(ii, Base.parse(T, val)))
             end
 
         elseif col == N-2
@@ -57,10 +57,11 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0, startinde
             for (jj,line) in enumerate(param)
                 tt_1 = deepcopy(tmp_fields)
                 push!(tt_1, jj)
-                for (ii,entry) in enumerate(string.(split(line)))
+                for (ℓ,val) in enumerate(string.(split(line)))
                         tt_2 = deepcopy(tt_1)
-                        push!(index, Tuple(push!(tt_2, ii)))
-                        push!(vv, Base.parse(T,entry))
+
+                        push!(index, Tuple(push!(tt_2, ℓ)))
+                        push!(vv, PriorityValue(ii, Base.parse(T, val)))
                 end 
             end
         else
@@ -68,7 +69,7 @@ function parse(s::String, values::Vector{Vector{String}}; default=0.0, startinde
         end
     end
 
-    data = OrderedDict(tuple => fvalue for (tuple, fvalue) in zip(index,vv))
+    data = Dict(tuple => fvalue for (tuple, fvalue) in zip(index,vv))
 
     return WildcardArray(data, Tuple(length(vp) for vp in values), default) 
 end
