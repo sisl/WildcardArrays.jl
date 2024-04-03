@@ -1,6 +1,5 @@
 using WildcardArrays
 using Test
-using OrderedCollections
 
 @testset "aloha.10.POMDP" begin
 # This example is the aloha.10.POMDP that can be found in http://pomdp.org/
