@@ -57,7 +57,7 @@ This syntax allows us to assign the value 'a' to each element specified by the s
 : n_1 : n_2 : ... : n_{l-1} a_1 a_2 ... a_{N_l}
 ```
 This syntax allows us to assign the value 'a_j' to the entry $(n_1, n_2, \ldots, n_{\ell-1}, j)$ for all $j =1, \ldots, N_\ell$. The package also accepts the string 'uniform' to be used instead of a vector in case one decides to assign a uniform probability distribution to the last entry. This is done using the syntax 
-```julia
+```math
 : n_1 : n_2 : ... : n_{l-1} uniform
  ```
 ### Specifying entire 2D matrices 
