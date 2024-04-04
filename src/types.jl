@@ -9,7 +9,7 @@ struct WildcardArray{T,N} <: AbstractArray{T,N}
     default::T
 end
 
-WildcardArray(s::String, values::Vector{T}; default=0.0, startindex=0) where T = parse(s, values, default=default, startindex=startindex)
+WildcardArray(s::String, values::Vector{T}; default=0.0, startindex=0) where T <: Union{Vector{String}, Any, Int} = parse(s, values, default=default, startindex=startindex)
 
 Base.size(wa::WildcardArray) = wa.dims
 Base.ndims(wa::WildcardArray) = length(wa.dims)
