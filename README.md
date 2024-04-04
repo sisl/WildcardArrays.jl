@@ -136,6 +136,4 @@ wa = WildcardArray(str, vv)
 
 wa[1,1,1,1] # This should be equal to one
 wa[4,2,4,2] # This should be equal to 90000
-
-nothing
 ```
