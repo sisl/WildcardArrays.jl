@@ -108,10 +108,9 @@ wa = WildcardArray(matrix_s, dims)
 
 ## Application to parse .POMDP files 
 
-An inspiration for this package arose due to our intention to parse .POMDP file format as described in [POMDP.org](http://pomdp.org/code/pomdp-file-spec.html). Recognizing that this data structure can be of wider interest, we decide to wrap its functionality in this package and share with the Julia community!
+The inspiration for this package arose due to our intention to parse the .POMDP file format described in [POMDP.org](http://pomdp.org/code/pomdp-file-spec.html). Recognizing that this data structure could be of wider interest, we decide to wrap its functionality into this package and share it with the Julia community! 
 
-In the near future, we will use the above functionalities to bring the examples from [POMDP.org](http://pomdp.org/code/pomdp-file-spec.html) into the [JuliaPOMDP](https://github.com/JuliaPOMDP) ecosystem. For instance, to parse the reward information in a .POMDP file, one may use the Julia code 
-
+In the near future, we will use the above functionalities to bring the examples from [POMDP.org](http://pomdp.org/code/pomdp-file-spec.html) into the [JuliaPOMDP](https://github.com/JuliaPOMDP) ecosystem by releasing a new version of the [POMDPFiles]() package. Here is a teaser on how this package can be used to parse reward transitions using the syntax described in [POMDP.org](http://pomdp.org/code/pomdp-file-spec.html).  
 
 
 ```julia
