@@ -1,7 +1,7 @@
 # WildcardArrays.jl
 
-[![Build Status](https://github.com/sisl/WildcardArrays.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/sisl/WildcardArrays.jl/actions/workflows/CI.yml?query=branch%3Amaster)
-[![codecov](https://codecov.io/gh/sisl/WildcardArrays.jl/branch/master/graph/badge.svg?token=btTBnBTQyw)](https://codecov.io/gh/sisl/WildcardArrays.jl)
+[![Build Status](https://github.com/sisl/WildcardArrays.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/sisl/WildcardArrays.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/sisl/WildcardArrays.jl/branch/main/graph/badge.svg?token=btTBnBTQyw)](https://codecov.io/gh/sisl/WildcardArrays.jl)
 
 ## Brief description
 
