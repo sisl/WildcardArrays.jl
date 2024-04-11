@@ -19,7 +19,7 @@ where the first colon represents the start of a specification, and the three sub
 To use this package, please run the command
 
 ```julia
-] add git@github.com:sisl/WildcardArrays.jl.git
+] add WildcardArrays
 ```
 
 ## API 
